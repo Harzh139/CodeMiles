@@ -1,6 +1,6 @@
 # CodeMiles 🚀
 Mobile-first AI-powered Git assistant. Edit your codebase without ever touching the terminal or reviewing files manually.
-Powered by Groq's API (`llama-3.3-70b-versatile`) and GitHub REST APIs.
+Powered by Google Gemini's API (`gemini-3-flash-preview`) and GitHub REST APIs.
 
 ## Features
 - **Zero-touch Workflow**: Log in with GitHub, paste your repo URL, completely bypass the CLI.
@@ -12,7 +12,7 @@ Powered by Groq's API (`llama-3.3-70b-versatile`) and GitHub REST APIs.
 - **Frontend**: React (Vite), Framer Motion, Lucide React, Diff
 - **Backend**: Node.js, Express, express-session, express-rate-limit
 - **Auth**: GitHub OAuth App
-- **LLM**: Groq LLaMA 3.3 70B
+- **LLM**: Gemini 3 Flash Preview
 
 ## Setup for Public Deployment
 You can deploy the frontend to Vercel and the backend to Render/Railway.
@@ -27,7 +27,8 @@ Go to your GitHub Developer Settings -> OAuth Apps -> New OAuth App
 Set the following env variables on your deployment host (e.g. Render). **Make sure your Root Directory is set to `backend`**.
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
-- `GROQ_API_KEY`
+- `GEMINI_API_KEY`
+- `GEMINI_MODEL` (default: `gemini-3-flash-preview`)
 - `FRONTEND_URL` (e.g., `https://codemiles.vercel.app` - no trailing slash)
 - `BACKEND_URL` (e.g., `https://codemiles-4.onrender.com` - no trailing slash)
 - `SESSION_SECRET` (Use a long random string)

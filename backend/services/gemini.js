@@ -1,16 +1,10 @@
 const axios = require('axios');
 
-class GroqService {
-  constructor(apiKey) {
+class GeminiService {
+  constructor(apiKey, model = 'gemini-1.5-flash') {
     this.apiKey = apiKey;
-    this.api = axios.create({
-      baseURL: 'https://api.groq.com/openai/v1',
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      timeout: 120000, // 2 minute timeout for large requests
-    });
+    this.model = model;
+    this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
   }
 
   /**
@@ -19,16 +13,16 @@ class GroqService {
    * Pass 2: Send only relevant files → AI generates changes
    */
   async getCodeChanges(files, instruction) {
-    console.log(`Processing ${files.length} files for instruction: "${instruction}"`);
+    console.log(`[Gemini] Processing ${files.length} files for instruction: "${instruction}"`);
 
     // If repo is small (< 15 files), use single-pass (faster)
     if (files.length <= 15) {
-      console.log('Small repo — using single-pass strategy');
+      console.log('[Gemini] Small repo — using single-pass strategy');
       return this._singlePass(files, instruction);
     }
 
     // Large repo — use two-pass strategy
-    console.log('Large repo — using two-pass strategy');
+    console.log('[Gemini] Large repo — using two-pass strategy');
     return this._twoPass(files, instruction);
   }
 
@@ -52,23 +46,18 @@ Example: ["src/App.jsx", "src/styles.css"]
 If unsure, include files that are most likely relevant. Maximum 10 files.`;
 
     try {
-      const selectResponse = await this.api.post('/chat/completions', {
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'user', content: selectPrompt }
-        ],
+      const selectedContent = await this._callGemini(selectPrompt, {
         temperature: 0.1,
-        max_tokens: 1000
+        responseMimeType: 'application/json'
       });
 
-      let selectedContent = selectResponse.data.choices[0].message.content.trim();
-      console.log('Pass 1 — Selected files:', selectedContent);
+      console.log('[Gemini] Pass 1 — Selected files:', selectedContent);
 
-      selectedContent = this._cleanJson(selectedContent);
-      const selectedPaths = JSON.parse(selectedContent);
+      const cleanedContent = this._cleanJson(selectedContent);
+      const selectedPaths = JSON.parse(cleanedContent);
 
       if (!Array.isArray(selectedPaths) || selectedPaths.length === 0) {
-        console.log('AI selected no files, falling back to single-pass with truncation');
+        console.log('[Gemini] AI selected no files, falling back to single-pass with truncation');
         return this._singlePass(files.slice(0, 15), instruction);
       }
 
@@ -78,17 +67,17 @@ If unsure, include files that are most likely relevant. Maximum 10 files.`;
       );
 
       if (relevantFiles.length === 0) {
-        console.log('No matching files found, falling back to single-pass with truncation');
+        console.log('[Gemini] No matching files found, falling back to single-pass with truncation');
         return this._singlePass(files.slice(0, 15), instruction);
       }
 
-      console.log(`Pass 2 — Sending ${relevantFiles.length} relevant files for modification`);
+      console.log(`[Gemini] Pass 2 — Sending ${relevantFiles.length} relevant files for modification`);
 
       // PASS 2: Send only relevant files for actual changes
       return this._singlePass(relevantFiles, instruction);
 
     } catch (error) {
-      console.error('Two-pass selection failed, falling back:', error.message);
+      console.error('[Gemini] Two-pass selection failed, falling back:', error.message);
       // Fallback: just send first 15 files
       return this._singlePass(files.slice(0, 15), instruction);
     }
@@ -137,34 +126,65 @@ If no changes are needed, return an empty array: []`;
     const userPrompt = `INSTRUCTION: ${instruction}\n\nCODEBASE:\n${codebaseContext}`;
 
     try {
-      const response = await this.api.post('/chat/completions', {
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
+      const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
+      const content = await this._callGemini(fullPrompt, {
         temperature: 0.1,
-        max_tokens: 32000
+        responseMimeType: 'application/json'
       });
 
-      let content = response.data.choices[0].message.content.trim();
-      console.log('Groq raw response (first 500 chars):', content.substring(0, 500));
+      console.log('[Gemini] Raw response (first 500 chars):', content.substring(0, 500));
       
-      content = this._cleanJson(content);
-      return JSON.parse(content);
+      const cleanedContent = this._cleanJson(content);
+      return JSON.parse(cleanedContent);
     } catch (error) {
       if (error instanceof SyntaxError) {
-        console.error('JSON Parse Error — Groq returned invalid JSON');
-        throw new Error('Groq returned invalid JSON — try a more specific instruction');
+        console.error('[Gemini] JSON Parse Error — AI returned invalid JSON');
+        throw new Error('AI returned invalid JSON — try a more specific instruction');
       }
-      const groqMsg = error.response?.data?.error?.message || error.message;
-      console.error('Groq API Error:', error.response?.data || error.message);
-      throw new Error(groqMsg || 'Unknown Groq error');
+      console.error('[Gemini] API Error:', error.message);
+      throw new Error(error.message || 'Unknown Gemini error');
+    }
+  }
+
+  async _callGemini(prompt, options = {}) {
+    const url = `${this.baseUrl}/models/${this.model}:generateContent?key=${this.apiKey}`;
+    
+    const body = {
+      contents: [
+        {
+          parts: [
+            { text: prompt }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: options.temperature || 0.1,
+        responseMimeType: options.responseMimeType || 'text/plain'
+      }
+    };
+
+    try {
+      const response = await axios.post(url, body, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 120000 // 2 minute timeout
+      });
+
+      if (!response.data || !response.data.candidates || !response.data.candidates[0]) {
+        throw new Error('Invalid response form Gemini API');
+      }
+
+      return response.data.candidates[0].content.parts[0].text;
+    } catch (error) {
+      const msg = error.response?.data?.error?.message || error.message;
+      throw new Error(`Gemini API Error: ${msg}`);
     }
   }
 
   _cleanJson(content) {
     // Remove markdown code fences if present
+    content = content.trim();
     if (content.startsWith('```json')) {
       content = content.replace(/^```json\n?/, '').replace(/\n?```$/, '');
     } else if (content.startsWith('```')) {
@@ -174,4 +194,4 @@ If no changes are needed, return an empty array: []`;
   }
 }
 
-module.exports = GroqService;
+module.exports = GeminiService;

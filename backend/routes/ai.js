@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const GroqService = require('../services/groq');
+const GeminiService = require('../services/gemini');
 
 router.post('/change', async (req, res) => {
   const { files, instruction } = req.body;
@@ -15,8 +15,8 @@ router.post('/change', async (req, res) => {
   }
 
   try {
-    const groq = new GroqService(process.env.GROQ_API_KEY);
-    const changes = await groq.getCodeChanges(files, instruction);
+    const gemini = new GeminiService(process.env.GEMINI_API_KEY, process.env.GEMINI_MODEL);
+    const changes = await gemini.getCodeChanges(files, instruction);
     res.json(changes);
   } catch (error) {
     console.error('AI change error:', error.message);
