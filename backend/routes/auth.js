@@ -20,8 +20,8 @@ router.get('/github/callback', async (req, res) => {
 
     const token = response.data.access_token;
     if (token) {
-      req.session.githubToken = token;
-      res.redirect(`${process.env.FRONTEND_URL}/repo`);
+      // Redirect to frontend with token in query param
+      res.redirect(`${process.env.FRONTEND_URL}/repo?token=${token}`);
     } else {
       res.redirect(`${process.env.FRONTEND_URL}?error=oauth_failed`);
     }
@@ -32,13 +32,14 @@ router.get('/github/callback', async (req, res) => {
 });
 
 router.get('/me', async (req, res) => {
-  if (!req.session.githubToken) {
+  const token = req.headers.authorization?.split('Bearer ')[1];
+  if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
-  
+
   try {
     const response = await axios.get('https://api.github.com/user', {
-      headers: { Authorization: `token ${req.session.githubToken}` }
+      headers: { Authorization: `token ${token}` }
     });
     res.json(response.data);
   } catch (error) {

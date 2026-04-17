@@ -4,7 +4,9 @@ const GitHubService = require('../services/github');
 
 router.post('/read', async (req, res) => {
   const { repoUrl } = req.body;
-  if (!req.session.githubToken) {
+  const token = req.headers.authorization?.split('Bearer ')[1];
+  
+  if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
@@ -13,7 +15,7 @@ router.post('/read', async (req, res) => {
   }
 
   try {
-    const githubData = await new GitHubService(req.session.githubToken).getRepoFiles(repoUrl);
+    const githubData = await new GitHubService(token).getRepoFiles(repoUrl);
     res.json(githubData);
   } catch (error) {
     console.error('Repo read error:', error.message);

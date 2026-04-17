@@ -4,8 +4,9 @@ const GitHubService = require('../services/github');
 
 router.post('/commit', async (req, res) => {
   const { repoUrl, changes } = req.body;
+  const token = req.headers.authorization?.split('Bearer ')[1];
 
-  if (!req.session.githubToken) {
+  if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
@@ -14,7 +15,7 @@ router.post('/commit', async (req, res) => {
   }
 
   try {
-    const github = new GitHubService(req.session.githubToken);
+    const github = new GitHubService(token);
     const { owner, repo } = await github.getRepoDetails(repoUrl);
     
     // We need to commit each file

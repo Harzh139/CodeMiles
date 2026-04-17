@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
   const handleLogout = async () => {
     try {
       await logout();
+      localStorage.removeItem('gh_token');
       setUser(null);
     } catch (err) {
       console.error('Logout failed', err);
