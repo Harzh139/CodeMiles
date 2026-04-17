@@ -20,7 +20,7 @@ You can deploy the frontend to Vercel and the backend to Render/Railway.
 ### 1. Register GitHub OAuth App
 Go to your GitHub Developer Settings -> OAuth Apps -> New OAuth App
 - **Homepage URL**: Your frontend's deployed URL (e.g., `https://codemiles.vercel.app`)
-- **Authorization callback URL**: Your backend's deployed URL + `/auth/github/callback` (e.g., `https://codemiles-backend.onrender.com/auth/github/callback`)
+- **Authorization callback URL**: Your backend's deployed URL + `/auth/github/callback` (e.g., `https://codemiles.onrender.com/auth/github/callback`)
 - Note down your `Client ID` and generate a `Client Secret`.
 
 ### 2. Backend Deployment Environment Variables (Render)
@@ -29,13 +29,13 @@ Set the following env variables on your deployment host (e.g. Render). **Make su
 - `GITHUB_CLIENT_SECRET`
 - `GROQ_API_KEY`
 - `FRONTEND_URL` (e.g., `https://codemiles.vercel.app` - no trailing slash)
-- `BACKEND_URL` (e.g., `https://codemiles-backend.onrender.com` - no trailing slash)
+- `BACKEND_URL` (e.g., `https://codemiles.onrender.com` - no trailing slash)
 - `SESSION_SECRET` (Use a long random string)
 - `NODE_ENV=production`
 
 ### 3. Frontend Deployment Environment Variables (Vercel)
 Set the following env variables in your frontend host (e.g. Vercel). **Make sure your Root Directory is set to `frontend`**.
-- `VITE_API_URL` (e.g., `https://codemiles-backend.onrender.com` - no trailing slash)
+- `VITE_API_URL` (e.g., `https://codemiles.onrender.com` - no trailing slash)
 
 ### Local Development
 1. Clone this repository.
