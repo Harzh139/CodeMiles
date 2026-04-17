@@ -15,33 +15,27 @@ Powered by Groq's API (`llama-3.3-70b-versatile`) and GitHub REST APIs.
 - **LLM**: Groq LLaMA 3.3 70B
 
 ## Setup for Public Deployment
-We have set this repository up as a unified **Monolithic Deployment**. This means the backend statically serves the built frontend using Express, which prevents any cross-domain or Safari cookie issues for your GitHub OAuth!
-
-You only need to deploy this single repository once using a service like **Render**, **Railway**, or **Heroku**.
+You can deploy the frontend to Vercel and the backend to Render/Railway.
 
 ### 1. Register GitHub OAuth App
 Go to your GitHub Developer Settings -> OAuth Apps -> New OAuth App
-- **Homepage URL**: Your new deployed URL (e.g., `https://codemiles-app.onrender.com`)
-- **Authorization callback URL**: Your deployed URL + `/auth/github/callback` (e.g., `https://codemiles-app.onrender.com/auth/github/callback`)
+- **Homepage URL**: Your frontend's deployed URL (e.g., `https://codemiles.vercel.app`)
+- **Authorization callback URL**: Your backend's deployed URL + `/auth/github/callback` (e.g., `https://codemiles-backend.onrender.com/auth/github/callback`)
 - Note down your `Client ID` and generate a `Client Secret`.
 
-### 2. Deploy Platform Settings (Render / Railway)
-Connect this repository to your hosting service. Since we added a root `package.json`, they will auto-detect the build scripts!
-- **Build Command**: `npm install && npm run build` (or they might use your `postinstall` automatically)
-- **Start Command**: `npm start`
-- **Root Directory**: Leave blank (root of project)
-
-### 3. Environment Variables
-Add these to your deployment service:
+### 2. Backend Deployment Environment Variables (Render)
+Set the following env variables on your deployment host (e.g. Render). **Make sure your Root Directory is set to `backend`**.
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
 - `GROQ_API_KEY`
-- `FRONTEND_URL` (Your URL again, e.g. `https://codemiles-app.onrender.com`)
-- `BACKEND_URL` (Same exact URL as frontend, e.g. `https://codemiles-app.onrender.com`)
+- `FRONTEND_URL` (e.g., `https://codemiles.vercel.app` - no trailing slash)
+- `BACKEND_URL` (e.g., `https://codemiles-backend.onrender.com` - no trailing slash)
 - `SESSION_SECRET` (Use a long random string)
 - `NODE_ENV=production`
 
-*(You no longer need to worry about Vercel, CORS origins, or custom domains since they are unified into one URL!)*
+### 3. Frontend Deployment Environment Variables (Vercel)
+Set the following env variables in your frontend host (e.g. Vercel). **Make sure your Root Directory is set to `frontend`**.
+- `VITE_API_URL` (e.g., `https://codemiles-backend.onrender.com` - no trailing slash)
 
 ### Local Development
 1. Clone this repository.
