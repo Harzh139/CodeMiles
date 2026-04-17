@@ -52,6 +52,18 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Serve frontend in production
+const path = require('path');
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (req, res) => {
+    // Only serve index.html for non-API routes
+    if (!req.path.startsWith('/auth') && !req.path.startsWith('/repo') && !req.path.startsWith('/ai') && !req.path.startsWith('/push')) {
+      res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+    }
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`Antigravity backend running on port ${PORT}`);
 });
