@@ -56,10 +56,12 @@ app.get('/health', (req, res) => {
 const path = require('path');
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  app.get('*', (req, res) => {
+  app.use((req, res, next) => {
     // Only serve index.html for non-API routes
-    if (!req.path.startsWith('/auth') && !req.path.startsWith('/repo') && !req.path.startsWith('/ai') && !req.path.startsWith('/push')) {
+    if (req.method === 'GET' && !req.path.startsWith('/auth') && !req.path.startsWith('/repo') && !req.path.startsWith('/ai') && !req.path.startsWith('/push')) {
       res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+    } else {
+      next();
     }
   });
 }
