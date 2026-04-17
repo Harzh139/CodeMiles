@@ -48,7 +48,6 @@ router.get('/me', async (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-  req.session.destroy();
   res.json({ success: true });
 });
 

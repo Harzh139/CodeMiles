@@ -20,19 +20,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(cors({
   origin: process.env.FRONTEND_URL,
-  credentials: true,
-}));
-
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    domain: process.env.COOKIE_DOMAIN,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  }
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 const rateLimit = require('express-rate-limit');
