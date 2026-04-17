@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { getAuthUrl } from '../api';
 import { Navigate, useSearchParams } from 'react-router-dom';
+import { GitBranch } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
           className="btn-primary" 
           onClick={() => window.location.href = getAuthUrl()}
         >
+          <GitBranch size={20} style={{ marginRight: '8px' }} />
           Login with GitHub
         </button>
       </div>
