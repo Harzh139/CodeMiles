@@ -1,10 +1,10 @@
-# Antigravity 🚀
+# CodeMiles 🚀
 Mobile-first AI-powered Git assistant. Edit your codebase without ever touching the terminal or reviewing files manually.
 Powered by Groq's API (`llama-3.3-70b-versatile`) and GitHub REST APIs.
 
 ## Features
 - **Zero-touch Workflow**: Log in with GitHub, paste your repo URL, completely bypass the CLI.
-- **AI File Discovery**: Describe what you want in plain English. Antigravity reads the entire repo and decides what needs editing.
+- **AI File Discovery**: Describe what you want in plain English. CodeMiles reads the entire repo and decides what needs editing.
 - **Line-by-line Diff**: A clean, minimalistic red/green diff viewer for reviewing modifications before they are pushed.
 - **Push Direct to Git**: Auto-generates a clean commit message and updates files using the GitHub Contents API directly on your repository.
 
@@ -21,8 +21,8 @@ You only need to deploy this single repository once using a service like **Rende
 
 ### 1. Register GitHub OAuth App
 Go to your GitHub Developer Settings -> OAuth Apps -> New OAuth App
-- **Homepage URL**: Your new deployed URL (e.g., `https://antigravity-app.onrender.com`)
-- **Authorization callback URL**: Your deployed URL + `/auth/github/callback` (e.g., `https://antigravity-app.onrender.com/auth/github/callback`)
+- **Homepage URL**: Your new deployed URL (e.g., `https://codemiles-app.onrender.com`)
+- **Authorization callback URL**: Your deployed URL + `/auth/github/callback` (e.g., `https://codemiles-app.onrender.com/auth/github/callback`)
 - Note down your `Client ID` and generate a `Client Secret`.
 
 ### 2. Deploy Platform Settings (Render / Railway)
@@ -36,8 +36,8 @@ Add these to your deployment service:
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
 - `GROQ_API_KEY`
-- `FRONTEND_URL` (Your URL again, e.g. `https://antigravity-app.onrender.com`)
-- `BACKEND_URL` (Same exact URL as frontend, e.g. `https://antigravity-app.onrender.com`)
+- `FRONTEND_URL` (Your URL again, e.g. `https://codemiles-app.onrender.com`)
+- `BACKEND_URL` (Same exact URL as frontend, e.g. `https://codemiles-app.onrender.com`)
 - `SESSION_SECRET` (Use a long random string)
 - `NODE_ENV=production`
 

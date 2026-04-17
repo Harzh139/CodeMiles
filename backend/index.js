@@ -67,5 +67,5 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.listen(PORT, () => {
-  console.log(`Antigravity backend running on port ${PORT}`);
+  console.log(`CodeMiles backend running on port ${PORT}`);
 });
