@@ -16,10 +16,20 @@ export default function DiffViewer({ original, modified }) {
       border: '1px solid var(--border)',
       marginTop: '12px'
     }}>
-      <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)', display: 'flex', gap: '8px' }}>
-        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56' }} />
-        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e' }} />
-        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27c93f' }} />
+      <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56' }} />
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e' }} />
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27c93f' }} />
+        </div>
+        <div style={{ display: 'flex', gap: '12px', fontSize: '11px', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--diff-add-text)' }}>
+            <span>🟢</span> Added
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--diff-rem-text)' }}>
+            <span>🔴</span> Removed
+          </div>
+        </div>
       </div>
       <div style={{ padding: '12px', overflowX: 'auto' }}>
         {diffParts.map((part, index) => {

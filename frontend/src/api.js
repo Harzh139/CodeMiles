@@ -39,4 +39,9 @@ export const pushCommit = async (repoUrl, changes) => {
   return response.data;
 };
 
+export const revertCommit = async (repoUrl, changes) => {
+  const response = await api.post('/push/revert', { repoUrl, changes });
+  return response.data;
+};
+
 export default api;

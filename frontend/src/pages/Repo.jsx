@@ -39,7 +39,7 @@ export default function Repo() {
       }
 
       // Pass state to diff page
-      navigate('/diff', { state: { repoUrl, changes } });
+      navigate('/diff', { state: { repoUrl, changes, instruction } });
       
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'An error occurred');
