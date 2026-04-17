@@ -21,7 +21,7 @@ router.get('/github/callback', async (req, res) => {
     const token = response.data.access_token;
     if (token) {
       // Redirect to frontend with token in query param
-      res.redirect(`${process.env.FRONTEND_URL}/repo?token=${token}`);
+      res.redirect(`${process.env.FRONTEND_URL}/?token=${token}`);
     } else {
       res.redirect(`${process.env.FRONTEND_URL}?error=oauth_failed`);
     }
