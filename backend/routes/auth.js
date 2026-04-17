@@ -3,11 +3,13 @@ const axios = require('axios');
 const router = express.Router();
 
 router.get('/github', (req, res) => {
-  const url = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo&redirect_uri=${process.env.BACKEND_URL}/auth/github/callback`;
+  const backendUrl = process.env.BACKEND_URL || (req.protocol + '://' + req.get('host'));
+  const url = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo&redirect_uri=${backendUrl}/auth/github/callback`;
   res.redirect(url);
 });
 
 router.get('/github/callback', async (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL || (req.protocol + '://' + req.get('host'));
   const { code } = req.query;
   try {
     const response = await axios.post('https://github.com/login/oauth/access_token', {
@@ -21,13 +23,13 @@ router.get('/github/callback', async (req, res) => {
     const token = response.data.access_token;
     if (token) {
       req.session.githubToken = token;
-      res.redirect(`${process.env.FRONTEND_URL}/repo`);
+      res.redirect(`${frontendUrl}/repo`);
     } else {
-      res.redirect(`${process.env.FRONTEND_URL}?error=oauth_failed`);
+      res.redirect(`${frontendUrl}?error=oauth_failed`);
     }
   } catch (error) {
     console.error('OAuth Error:', error.message);
-    res.redirect(`${process.env.FRONTEND_URL}?error=server_error`);
+    res.redirect(`${frontendUrl}?error=server_error`);
   }
 });
 
