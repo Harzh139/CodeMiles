@@ -4,8 +4,9 @@ const GroqService = require('../services/groq');
 
 router.post('/change', async (req, res) => {
   const { files, instruction } = req.body;
+  const token = req.headers.authorization?.split('Bearer ')[1];
 
-  if (!req.session.githubToken) {
+  if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
