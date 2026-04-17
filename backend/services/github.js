@@ -36,8 +36,8 @@ class GitHubService {
     const tree = treeResponse.data.tree;
 
     const files = [];
-    const MAX_FILES = 200;
-    const MAX_FILE_SIZE = 100 * 1024; // 100KB
+    const MAX_FILES = 80;
+    const MAX_FILE_SIZE = 50 * 1024; // 50KB
     const IGNORED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.pdf', '.zip', '.exe', '.lock'];
     const IGNORED_PATHS = ['node_modules/', '.git/', 'package-lock.json', 'yarn.lock'];
 
