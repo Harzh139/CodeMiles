@@ -20,7 +20,9 @@ router.post('/change', async (req, res) => {
     res.json(changes);
   } catch (error) {
     console.error('AI change error:', error.message);
-    res.status(500).json({ error: 'AI processing failed or returned invalid response format. Try rephrasing.' });
+    console.error('AI change full error:', error.response?.data || error);
+    const detail = error.response?.data?.error?.message || error.message || 'Unknown error';
+    res.status(500).json({ error: `AI failed: ${detail}` });
   }
 });
 
