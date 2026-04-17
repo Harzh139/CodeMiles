@@ -50,19 +50,24 @@ If no changes are needed, return an empty array: []`;
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.1,
-        max_tokens: 8000
+        max_tokens: 32000
       });
 
       let content = response.data.choices[0].message.content.trim();
+      console.log('Groq raw response (first 500 chars):', content.substring(0, 500));
+      
       // Remove possible markdown backticks if AI ignores system prompt instructions
       if (content.startsWith('```json')) {
-        content = content.replace(/^```json/, '').replace(/```$/, '');
+        content = content.replace(/^```json\n?/, '').replace(/\n?```$/, '');
       } else if (content.startsWith('```')) {
-        content = content.replace(/^```/, '').replace(/```$/, '');
+        content = content.replace(/^```\n?/, '').replace(/\n?```$/, '');
       }
       
       return JSON.parse(content);
     } catch (error) {
+      if (error instanceof SyntaxError) {
+        console.error('JSON Parse Error — Groq returned invalid JSON');
+      }
       console.error('Groq API Error:', error.response?.data || error.message);
       throw new Error('AI processing failed');
     }
