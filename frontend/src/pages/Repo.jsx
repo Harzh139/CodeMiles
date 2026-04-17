@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { readRepo, getCodeChanges } from '../api';
 import StepBar from '../components/StepBar';
 import Loader from '../components/Loader';
@@ -8,16 +8,7 @@ import { LogOut } from 'lucide-react';
 
 export default function Repo() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { user, handleLogout } = useAuth();
-
-  useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      localStorage.setItem('gh_token', token);
-      window.history.replaceState({}, '', '/repo');
-    }
-  }, [searchParams]);
   
   const [repoUrl, setRepoUrl] = useState('');
   const [instruction, setInstruction] = useState('');
