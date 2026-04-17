@@ -17,8 +17,11 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Strip trailing slash to prevent CORS mismatch
+const FRONTEND_ORIGIN = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: FRONTEND_ORIGIN,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));

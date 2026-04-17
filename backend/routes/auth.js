@@ -2,8 +2,12 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
+// Strip trailing slashes to prevent double-slash redirect URLs
+const FRONTEND = () => (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+const BACKEND = () => (process.env.BACKEND_URL || '').replace(/\/+$/, '');
+
 router.get('/github', (req, res) => {
-  const url = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo&redirect_uri=${process.env.BACKEND_URL}/auth/github/callback`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo&redirect_uri=${BACKEND()}/auth/github/callback`;
   res.redirect(url);
 });
 
@@ -20,14 +24,13 @@ router.get('/github/callback', async (req, res) => {
 
     const token = response.data.access_token;
     if (token) {
-      // Redirect to frontend with token in query param
-      res.redirect(`${process.env.FRONTEND_URL}/?token=${token}`);
+      res.redirect(`${FRONTEND()}/?token=${token}`);
     } else {
-      res.redirect(`${process.env.FRONTEND_URL}?error=oauth_failed`);
+      res.redirect(`${FRONTEND()}?error=oauth_failed`);
     }
   } catch (error) {
     console.error('OAuth Error:', error.message);
-    res.redirect(`${process.env.FRONTEND_URL}?error=server_error`);
+    res.redirect(`${FRONTEND()}?error=server_error`);
   }
 });
 
