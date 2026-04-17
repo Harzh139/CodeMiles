@@ -155,9 +155,11 @@ If no changes are needed, return an empty array: []`;
     } catch (error) {
       if (error instanceof SyntaxError) {
         console.error('JSON Parse Error — Groq returned invalid JSON');
+        throw new Error('Groq returned invalid JSON — try a more specific instruction');
       }
+      const groqMsg = error.response?.data?.error?.message || error.message;
       console.error('Groq API Error:', error.response?.data || error.message);
-      throw new Error('AI processing failed');
+      throw new Error(groqMsg || 'Unknown Groq error');
     }
   }
 
